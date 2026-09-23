@@ -12,7 +12,6 @@ import vercel from '@astrojs/vercel';
 // `base` (Astro default `/`). Production domain set for sitemap +
 // canonical links.
 export default defineConfig({
-  output: 'server',
   adapter: vercel({
     webAnalytics: { enabled: true }
   }),
