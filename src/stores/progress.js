@@ -9,8 +9,9 @@ export const progressStore = persistentMap(PROGRESS_STORAGE_KEY, {}, {
 });
 
 // Normalize any site path to the two-segment page slug used as store key,
-// e.g. "/aws-saa-c03-study-guide/01-aws-fundamentals/full/" -> "01-aws-fundamentals/full".
-// Works both under the Pages `base` and at domain root (last two segments).
+// e.g. "/01-aws-fundamentals/full/" -> "01-aws-fundamentals/full".
+// Takes the last two segments, so keys stay stable regardless of deploy
+// base path.
 export function slugFromPath(pathname) {
   const parts = pathname
     .replace(/\/index\.html$/, '')

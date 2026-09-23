@@ -11,6 +11,7 @@
     "sync": "node scripts/sync-content.js",
     "sync:assert-quiz": "node scripts/sync-content.js --assert-quiz",
     "sync:check": "node scripts/sync-content.js --check",
+    "sync:vercel": "node scripts/sync-vercel.js",
     "test": "node --test scripts/sync-content.guard.test.mjs",
     "test:e2e": "npm run build && playwright test"
   },

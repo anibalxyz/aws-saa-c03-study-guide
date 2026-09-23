@@ -6,9 +6,12 @@ import { defineConfig } from 'astro/config';
 // src/pwa.ts + public/manifest.webmanifest): the @vite-pwa/astro wrapper
 // capped Astro at v5, so the service worker is built with workbox-build
 // directly over dist/ instead.
+//
+// Vercel serves the site at the domain root, so there is deliberately no
+// `base` (Astro default `/`). `site` stays unset until the production
+// domain is known — point it at the final Vercel URL for correct
+// canonical links.
 export default defineConfig({
-  site: 'https://anibalxyz.github.io',
-  base: '/aws-saa-c03-study-guide',
   integrations: [
     starlight({
       title: 'AWS SAA-C03 Study Guide',

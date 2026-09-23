@@ -7,7 +7,7 @@ import { defineConfig, devices } from '@playwright/test';
 // preview start/stop handled by `webServer` below).
 // Reuses the system Chrome (`channel: 'chrome'`) so no browser
 // download is needed.
-const BASE_URL = 'http://localhost:4321/aws-saa-c03-study-guide';
+const BASE_URL = 'http://localhost:4321';
 
 export default defineConfig({
   testDir: './tests',

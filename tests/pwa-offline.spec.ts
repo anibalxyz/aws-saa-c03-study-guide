@@ -8,9 +8,9 @@ test('service worker registered with scope and a full precache', async ({ page }
   });
 
   const scope = await page.evaluate(
-    () => navigator.serviceWorker.getRegistration('/aws-saa-c03-study-guide/').then((r) => r?.scope),
+    () => navigator.serviceWorker.getRegistration('/').then((r) => r?.scope),
   );
-  expect(scope).toBe('http://localhost:4321/aws-saa-c03-study-guide/');
+  expect(scope).toBe('http://localhost:4321/');
 
   const precached = await page.evaluate(async () => {
     const names = await caches.keys();
@@ -22,7 +22,7 @@ test('service worker registered with scope and a full precache', async ({ page }
 });
 
 test('PWA manifest and favicon serve 200', async ({ request }) => {
-  for (const path of ['/aws-saa-c03-study-guide/manifest.webmanifest', '/aws-saa-c03-study-guide/favicon.svg']) {
+  for (const path of ['/manifest.webmanifest', '/favicon.svg']) {
     const response = await request.get(path);
     expect(response.status(), path).toBe(200);
   }
