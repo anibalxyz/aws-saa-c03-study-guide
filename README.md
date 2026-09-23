@@ -90,13 +90,11 @@ Dashboard settings (set once by a human, not in code):
 - **Build Command:** `npm run sync:vercel && npm run build` — fetches the SHA-pinned upstream source as a tarball and syncs content, then builds SSG output + the service worker
 - **Output Directory:** `dist`
 - **Environment Variables:** none (`CONTENT_SOURCE_DIR` is set internally by `sync:vercel`; the site has no secrets)
-- **Domain:** no custom domain yet — the `*.vercel.app` URL applies. Once a final domain is chosen, set `site:` in `astro.config.mjs` to it (currently unset) for correct canonical links.
+- **Domain:** `https://aws-saa-c03-study-guide.vercel.app/` — also set as `site:` in `astro.config.mjs` (sitemap + canonical links).
 
 **Content on hosted builders:** builders only receive this repo, but sync needs the pinned upstream checkout. `npm run sync:vercel` (`scripts/sync-vercel.js`) downloads `https://github.com/ChathurangaVKD/AWS-Certified-Solutions-Architect-Associate-SAA-C03/archive/<sha>.tar.gz` at the exact SHA from `source-sha.txt`, verifies the tarball top-level dir carries that SHA, runs the sync with `CONTENT_SOURCE_DIR` pointed at the extraction, and cleans up. (Sync's count assertions run inside, so no separate assert step is needed in the build command.)
 
 **Base path note:** the site is served at the domain root (no `base` in `astro.config.mjs`). Local dev/preview URLs are plain `http://localhost:4321/` with no subpath prefix.
-
-**No GitHub Pages:** the old Pages workflow (`.github/workflows/deploy.yml`) was removed — Vercel is the only deployment target.
 
 ## Built with AI
 
