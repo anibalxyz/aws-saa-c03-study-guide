@@ -110,8 +110,22 @@ function assertPinnedSha(sourceDir) {
   try {
     have = execFileSync('git', ['-C', sourceDir, 'rev-parse', 'HEAD'], {
       encoding: 'utf8',
+      // Pipe stderr: a non-git source (tarball) fails this probe on the way
+      // to the CONTENT_SOURCE_TARBALL_SHA fallback below, and git's own
+      // "fatal: not a git repository" would only pollute build logs.
+      stdio: ['ignore', 'pipe', 'pipe'],
     }).trim().toLowerCase();
   } catch {
+    // No git metadata: the hosted-builder path (scripts/sync-vercel.js)
+    // fetches the pinned commit as a tarball, which has no `.git` dir.
+    // Accept it only when the fetcher verified the commit itself and passes
+    // its SHA via CONTENT_SOURCE_TARBALL_SHA. Anything else still dies.
+    const tarballSha = (process.env.CONTENT_SOURCE_TARBALL_SHA ?? '').trim().toLowerCase();
+    if (tarballSha === want) {
+      console.log(`source verified as tarball @${want.slice(0, 7)} (no git HEAD to compare)`);
+      return want;
+    }
+    if (tarballSha) die(`source SHA mismatch: tarball is ${tarballSha}, pinned to ${want}`);
     die(`cannot read git HEAD of source checkout at ${sourceDir}`);
   }
   if (have !== want) {
@@ -164,10 +178,11 @@ function stripDuplicateH1(body, title) {
 
 // Rewrite `../<Module-Dir>/<FILE>.md(#frag)` to site slugs, e.g.
 // `../02-IAM/FAST-LEARN.md` -> `../../02-iam/fast-learn/`.
-// Links are page-relative (not root-absolute) so the Move-to chain keeps
-// working under the site `base` (GitHub Pages project path). TWO levels up:
-// content routes render as `<module>/<page>/` (trailing slash adds a URL
-// level), so a single `../` would stay inside the current module.
+// Links are page-relative (not root-absolute) so content links resolve
+// identically in dev, preview, and production with no base-path coupling.
+// TWO levels up: content routes render as `<module>/<page>/` (trailing
+// slash adds a URL level), so a single `../` would stay inside the
+// current module.
 // Plain `Move to: Module NN - Name` lines (no link) become links so the
 // Move-to chain survives the move off GitHub.
 function rewriteLinks(body, modulesByDir, moduleNumberToSlug) {

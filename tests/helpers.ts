@@ -1,10 +1,9 @@
 import type { Page } from '@playwright/test';
 
-// Origin-rooted site path. Playwright resolves a leading-slash `goto`
-// against the baseURL *origin* (dropping its subpath), so every
-// navigation spells the /aws-saa-c03-study-guide prefix explicitly
-// instead of relying on baseURL resolution.
-export const site = (path: string): string => `/aws-saa-c03-study-guide${path}`;
+// Domain-rooted site path (Vercel serves the site at the origin root, no
+// `base` subpath). Playwright resolves a leading-slash `goto` against the
+// baseURL origin, so paths pass through unchanged.
+export const site = (path: string): string => path;
 
 // Collects console errors + uncaught page errors for the
 // console-error-free assertions. Attach BEFORE navigation.

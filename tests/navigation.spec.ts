@@ -11,7 +11,7 @@ test('home loads on both URL forms and stays console-error-free', async ({ page 
   }
   // Bare (slashless) home URL serves the same page, not a redirect loop.
   await page.goto(site(''));
-  expect(page.url()).toMatch(/\/aws-saa-c03-study-guide\/?$/);
+  expect(page.url()).toMatch(/localhost:4321\/?$/);
   expect(errors).toEqual([]);
 });
 
