@@ -1,5 +1,6 @@
 import starlight from '@astrojs/starlight';
 import { defineConfig } from 'astro/config';
+import vercel from '@astrojs/vercel';
 
 // PR3: component overrides for quiz progress (Footer sentinel, sidebar
 // checkmarks, top-bar badge). PWA is manual (scripts/generate-sw.js +
@@ -11,6 +12,9 @@ import { defineConfig } from 'astro/config';
 // `base` (Astro default `/`). Production domain set for sitemap +
 // canonical links.
 export default defineConfig({
+  adapter: vercel({
+    webAnalytics: { enabled: true }
+  }),
   site: 'https://aws-saa-c03-study-guide.vercel.app',
   integrations: [
     starlight({
