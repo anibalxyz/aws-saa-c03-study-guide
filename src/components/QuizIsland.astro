@@ -1,0 +1,185 @@
+---
+// QuizIsland: SSG-rendered quiz with progressive enhancement.
+//
+// Questions, options, explanations, and answers render as static HTML at
+// build time (indexable, offline-safe, zero cost until seen). The inline
+// script below activates only when the island scrolls near the viewport,
+// then grades locally and persists results to the scores store.
+// No UI framework, no eager work, no network.
+const { module } = Astro.props;
+const quizzes = import.meta.glob('../data/quiz/*.json', {
+  eager: true,
+  import: 'default',
+});
+const quiz = quizzes[`../data/quiz/${module}.json`];
+if (!quiz) throw new Error(`QuizIsland: no quiz JSON for module "${module}"`);
+---
+
+<section class="quiz-island" data-quiz-island data-module={module}>
+  <p class="quiz-tally" data-quiz-tally></p>
+  {
+    quiz.questions.map((q, i) => {
+      const multi = q.answer.length > 1;
+      return (
+        <article
+          class="quiz-q"
+          data-quiz-q
+          data-id={q.id}
+          data-answer={q.answer.join(',')}
+        >
+          <p class="quiz-stem">
+            <strong>
+              Q{i + 1}.{multi ? ` Choose ${q.answer.length}.` : ''}
+            </strong>{' '}
+            {q.stem}
+          </p>
+          <div class="quiz-options">
+            {q.options.map((o) => (
+              <label class="quiz-opt" data-quiz-opt>
+                <input type={multi ? 'checkbox' : 'radio'} name={q.id} value={o.key} />{' '}
+                <span>
+                  <strong>{o.key}.</strong> {o.text}
+                </span>
+              </label>
+            ))}
+          </div>
+          <p class="quiz-feedback" data-quiz-feedback hidden></p>
+          <div class="quiz-expl" data-quiz-expl hidden>
+            <p>
+              <strong>Explanation:</strong> {q.explanation}
+            </p>
+            {q.references?.length > 0 && (
+              <p>
+                <strong>References:</strong> {q.references.join('; ')}
+              </p>
+            )}
+          </div>
+        </article>
+      );
+    })
+  }
+</section>
+
+<script>
+  import { recordAnswer, moduleScore } from '../stores/scores.js';
+
+  const sameSet = (a, b) =>
+    a.length === b.length && a.every((v) => b.includes(v));
+
+  function paintTally(root) {
+    const ids = [...root.querySelectorAll('[data-quiz-q]')].map((el) => el.dataset.id);
+    const s = moduleScore(ids);
+    root.querySelector('[data-quiz-tally]').textContent =
+      s.answered === 0
+        ? `${s.total} questions — select an answer to check yourself.`
+        : `Score: ${s.correct}/${s.total} (${s.answered} answered) — saved on this device.`;
+  }
+
+  function grade(question) {
+    const want = question.dataset.answer.split(',');
+    const picked = [...question.querySelectorAll('input:checked')].map((i) => i.value);
+    if (picked.length === 0) return;
+    const ok = sameSet(picked, want);
+    question.querySelectorAll('[data-quiz-opt]').forEach((label) => {
+      const input = label.querySelector('input');
+      const hit = want.includes(input.value);
+      label.classList.toggle('quiz-right', hit);
+      label.classList.toggle(
+        'quiz-wrong',
+        input.checked && !hit,
+      );
+    });
+    const fb = question.querySelector('[data-quiz-feedback]');
+    fb.hidden = false;
+    fb.textContent = ok
+      ? `Correct — ${want.join(', ')}.`
+      : `Not quite — the answer is ${want.join(', ')}.`;
+    fb.classList.toggle('quiz-ok', ok);
+    question.querySelector('[data-quiz-expl]').hidden = false;
+    recordAnswer(question.dataset.id, ok);
+    paintTally(question.closest('[data-quiz-island]'));
+  }
+
+  function activate(root) {
+    paintTally(root);
+    root.addEventListener('change', (e) => {
+      const q = e.target.closest('[data-quiz-q]');
+      if (q) grade(q);
+    });
+  }
+
+  for (const root of document.querySelectorAll('[data-quiz-island]')) {
+    if (!('IntersectionObserver' in window)) {
+      activate(root);
+      continue;
+    }
+    const io = new IntersectionObserver(
+      (entries, obs) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          activate(root);
+          obs.disconnect();
+        }
+      },
+      { rootMargin: '200px' },
+    );
+    io.observe(root);
+  }
+</script>
+
+<style>
+  @layer starlight.components {
+    .quiz-island {
+      display: grid;
+      gap: 1.25rem;
+      margin-block: 1.5rem;
+    }
+    .quiz-tally {
+      font-weight: 600;
+    }
+    .quiz-q {
+      border: 1px solid var(--sl-color-hairline);
+      border-radius: 0.5rem;
+      padding: 1rem;
+    }
+    .quiz-stem {
+      margin: 0 0 0.75rem;
+    }
+    .quiz-options {
+      display: grid;
+      gap: 0.5rem;
+    }
+    .quiz-opt {
+      display: flex;
+      gap: 0.5rem;
+      align-items: flex-start;
+      padding: 0.5rem 0.6rem;
+      border-radius: 0.375rem;
+      cursor: pointer;
+    }
+    .quiz-opt input {
+      margin-top: 0.2rem;
+      min-width: 1.1rem;
+      min-height: 1.1rem;
+    }
+    .quiz-right {
+      background: var(--sl-color-green-low, rgb(0 128 0 / 0.12));
+    }
+    .quiz-wrong {
+      background: var(--sl-color-red-low, rgb(255 0 0 / 0.08));
+    }
+    .quiz-feedback {
+      font-weight: 600;
+      margin: 0.75rem 0 0;
+    }
+    .quiz-ok {
+      color: var(--sl-color-green-high, green);
+    }
+    .quiz-expl {
+      margin-top: 0.5rem;
+      font-size: 0.95em;
+    }
+    .quiz-expl p {
+      margin: 0.4rem 0 0;
+    }
+  }
+</style>

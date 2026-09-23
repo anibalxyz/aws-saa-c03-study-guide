@@ -1,0 +1,32 @@
+{
+  "name": "aws-saa-c03-study-guide",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Mobile-first SAA-C03 study site (Astro Starlight) compiled from the pinned study-guide source checkout.",
+  "type": "module",
+  "scripts": {
+    "build": "astro build && node scripts/generate-sw.js",
+    "dev": "astro dev",
+    "preview": "astro preview",
+    "sync": "node scripts/sync-content.js",
+    "sync:assert-quiz": "node scripts/sync-content.js --assert-quiz",
+    "sync:check": "node scripts/sync-content.js --check",
+    "test": "node --test scripts/sync-content.guard.test.mjs",
+    "test:e2e": "npm run build && playwright test"
+  },
+  "dependencies": {
+    "@astrojs/starlight": "^0.42.3",
+    "@nanostores/persistent": "^1.3.5",
+    "astro": "^7.3.4",
+    "mermaid": "^12.0.0",
+    "nanostores": "^1.5.3",
+    "sharp": "^0.35.4",
+    "workbox-build": "^7.4.1"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.63.0"
+  }
+}

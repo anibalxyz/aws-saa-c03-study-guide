@@ -1,0 +1,57 @@
+# sdd-init/aws-saa-c03-study-guide
+# SDD project context — artifact_store.mode is hybrid, so this file AND Engram
+# (topic sdd-init/aws-saa-c03-study-guide) are the persisted init artifacts.
+# Generated 2026-09-19 by the sdd-init phase.
+schema: spec-driven
+
+context: |
+  Tech stack: none yet — empty app repo (LICENSE + README.md only). Stack is chosen during explore/propose.
+  Architecture: to be designed; study website compiling content at build time (GitHub Actions) from a content-source repo.
+  Content source (read-only reference, NEVER copy): ../AWS-Certified-Solutions-Architect-Associate-SAA-C03 (modules 01-*..14-*, AGENTS.md Mermaid rules, Jekyll _config.yml, index.html landing).
+  Testing: no runner (zero discovered projects). Strict TDD disabled (no-runner fallback).
+  Workflow: pace auto, delivery auto-chain, artifact store hybrid (openspec/ + Engram). Review budget: 400 changed lines per PR.
+  Content constraints: original content only; placeholder AWS credentials; paraphrase AWS docs + link (docs.aws.amazon.com).
+
+strict_tdd: false
+strict_tdd_reason: "Zero discovered projects with supported markers (no package.json, go.mod, pyproject.toml, Cargo.toml, Makefile at root or within two levels) and no explicit workspace-level test command. No-runner fallback applies; stack choice is deferred to explore/propose."
+
+projects: []
+
+testing:
+  strict_tdd: false
+  detected: "2026-09-19"
+  runners: "none — empty repo, no unit, integration, or E2E framework present"
+  checks: []
+  ci: "none yet — build-time compile from content source (GitHub Actions) to be specified in explore/propose"
+  layers:
+    unit: false
+    integration: false
+    e2e: false
+  coverage: false
+
+rules:
+  proposal:
+    - Include rollback plan for risky changes
+    - Reference, never copy, content-source Markdown (single source of truth stays in the source repo)
+  specs:
+    - Use Given/When/Then for scenarios
+    - Use RFC 2119 keywords (MUST, SHALL, SHOULD, MAY)
+  design:
+    - Include sequence diagrams for complex flows
+    - Document architecture decisions with rationale
+  tasks:
+    - Group by phase, use hierarchical numbering
+    - Keep tasks completable in one session
+  apply:
+    guidelines:
+      - Follow the stack conventions chosen in explore/propose once this repo has its own app-stack AGENTS.md
+      - Never commit real credentials/IDs; use documented example placeholders only
+      - Original content only: no exam dumps, paid-course content, or verbatim AWS-doc pastes (paraphrase + link docs.aws.amazon.com)
+    tdd: false
+    test_command: ""
+  verify:
+    test_command: ""
+    build_command: ""
+    coverage_threshold: 0
+  archive:
+    - Warn before merging destructive deltas

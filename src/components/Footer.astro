@@ -1,0 +1,16 @@
+---
+// Footer override: renders the default Starlight article footer, then the
+// scroll-end sentinel consumed by PageCompletionTrigger, plus the lazy
+// Mermaid island (no-ops on pages without mermaid fences).
+import Default from '@astrojs/starlight/components/Footer.astro';
+import MermaidIsland from './MermaidIsland.astro';
+---
+
+<Default />
+<div data-page-sentinel aria-hidden="true"></div>
+<MermaidIsland />
+
+<script>
+  import { initPageCompletion } from './PageCompletionTrigger.client.js';
+  initPageCompletion();
+</script>

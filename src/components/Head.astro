@@ -1,0 +1,15 @@
+---
+// Head override: default Starlight head plus PWA wiring.
+//
+// The manifest link and the registration entry (`src/pwa.ts`) are explicit:
+// the service worker is built manually by scripts/generate-sw.js (no PWA
+// plugin), so nothing injects itself into Starlight-owned pages.
+import Default from '@astrojs/starlight/components/Head.astro';
+
+// BASE_URL carries no trailing slash in the built output, so normalize it.
+const manifestHref = `${import.meta.env.BASE_URL.replace(/\/?$/, '/')}manifest.webmanifest`;
+---
+
+<Default />
+<link rel="manifest" href={manifestHref} />
+<script src="../pwa.ts"></script>

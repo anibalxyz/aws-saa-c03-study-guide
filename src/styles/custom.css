@@ -1,0 +1,64 @@
+/* PR2: mobile-first transit-reading overrides (Starlight CSS vars only).
+ * No eager islands here — pure CSS, zero Lighthouse interactivity cost. */
+
+:root {
+  /* Slightly narrower measure for comfortable one-handed phone reading. */
+  --sl-content-width: 46rem;
+  /* Roomier prose for small screens and shaky commutes. */
+  --sl-line-height: 1.75;
+}
+
+/* Base prose: keep Starlight's type scale, just open up the rhythm. */
+.sl-markdown-content {
+  line-height: var(--sl-line-height);
+}
+
+/* Tables from the source guides are wide — scroll them, never clip them. */
+.sl-markdown-content table {
+  display: block;
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Long AWS service names and ARNs should wrap instead of overflowing. */
+.sl-markdown-content :is(p, li, td, th) {
+  overflow-wrap: break-word;
+}
+
+/* Code blocks stay thumb-scrollable without shifting page layout. */
+.sl-markdown-content pre {
+  max-width: 100%;
+  overflow-x: auto;
+  font-size: 0.85rem;
+}
+
+/* Details/summary quiz-preview blocks get a clear tap target. */
+.sl-markdown-content summary {
+  min-height: 2.75rem;
+  cursor: pointer;
+}
+
+/* Mermaid placeholder blocks (rendered by the PR4 lazy island) keep their
+ * aspect box so the page does not jump when the SVG hydrates near viewport. */
+.sl-markdown-content pre[data-language='mermaid'] {
+  min-height: 12rem;
+}
+
+/* Small phones: tighten sidebar-adjacent padding, keep content full-bleed. */
+@media (max-width: 30rem) {
+  .sl-markdown-content {
+    font-size: 1.025rem;
+  }
+
+  .sl-markdown-content :is(h1, h2, h3) {
+    text-wrap: balance;
+  }
+}
+
+/* Reduced motion: no smooth-scroll surprises on transit. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}

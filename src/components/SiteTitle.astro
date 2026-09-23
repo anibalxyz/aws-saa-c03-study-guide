@@ -1,0 +1,45 @@
+---
+// SiteTitle override: default title plus a top-bar progress badge.
+// The badge subscribes to the progress store (restored from localStorage
+// on reload) and counts completed pages against the sidebar link total.
+import Default from '@astrojs/starlight/components/SiteTitle.astro';
+---
+
+<Default />
+<span class="progress-badge" data-progress-badge hidden></span>
+
+<script>
+  import { progressStore, slugFromPath } from '../stores/progress.js';
+
+  const badge = document.querySelector('[data-progress-badge]');
+  if (badge) {
+    const paint = () => {
+      // Store keys are already two-segment page slugs (markPageComplete only
+      // writes slugs), so they need no re-normalization — only sidebar hrefs
+      // (full URLs under the Pages `base`) go through slugFromPath.
+      const done = new Set(Object.keys(progressStore.get()));
+      const links = [
+        ...document.querySelectorAll('#starlight__sidebar a[href]'),
+      ].map((a) => slugFromPath(new URL(a.href).pathname));
+      const total = new Set(links.filter(Boolean)).size;
+      const count = links.filter((s) => done.has(s)).length;
+      badge.hidden = total === 0;
+      badge.textContent = `${count}/${total || '—'} done`;
+      badge.setAttribute('aria-label', `${count} of ${total} pages complete`);
+    };
+    progressStore.listen(paint);
+    paint();
+  }
+</script>
+
+<style>
+  .progress-badge {
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+    border: 1px solid var(--sl-color-hairline);
+    border-radius: 999px;
+    padding: 0.15rem 0.6rem;
+    margin-inline-start: 0.5rem;
+  }
+</style>

@@ -1,0 +1,35 @@
+---
+// Sidebar override: default Starlight sidebar plus completion checkmarks.
+// Links whose page slug is in the progress store get a ✓ marker; the
+// subscription repaints live when the trigger fires, and localStorage
+// restores the marks on reload.
+import Default from '@astrojs/starlight/components/Sidebar.astro';
+---
+
+<Default />
+
+<script>
+  import { progressStore, slugFromPath } from '../stores/progress.js';
+
+  const paint = () => {
+    const done = new Set(Object.keys(progressStore.get()));
+    for (const link of document.querySelectorAll('#starlight__sidebar a[href]')) {
+      const slug = slugFromPath(new URL(link.href).pathname);
+      const marked = link.querySelector('[data-done-mark]');
+      if (done.has(slug)) {
+        link.setAttribute('aria-label', `${link.textContent.trim()} (completed)`);
+        if (!marked) {
+          const tick = document.createElement('span');
+          tick.dataset.doneMark = 'true';
+          tick.setAttribute('aria-hidden', 'true');
+          tick.textContent = ' ✓';
+          link.append(tick);
+        }
+      } else if (marked) {
+        marked.remove();
+      }
+    }
+  };
+  progressStore.listen(paint);
+  paint();
+</script>
